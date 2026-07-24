@@ -62,17 +62,26 @@ export function modelPatch(body: Record<string, any>, baseURL?: string) {
 	if (modelName.startsWith('gpt')) {
 		if (modelName.startsWith('gpt-5')) {
 			body.verbosity = 'low'
-
-			// gpt-5 gpt-5-mini gpt-5-nano only supports "minimal";
-			// 5.1+ supports "none".
-			body.reasoning_effort = /^gpt-5(-|$)/.test(modelName) ? 'minimal' : 'none'
-			debug(`Patch GPT-5: verbosity=low, reasoning_effort=${body.reasoning_effort}`)
 		}
 
+		// Since gpt-5.4, /chat/completions rejects any explicit reasoning_effort
+		// when function tools are present. Newer models are expected to follow.
+		// - gpt-5.1 / gpt-5.2 can fully disable reasoning
+		// - gpt-5 / -mini / -nano bottom out at "minimal"
+		// - everything else (gpt-4.x, chat-latest, gpt-5.4+) must not receive it
 		if (modelName.includes('chat-latest')) {
-			debug('Omitting reasoning_effort and temperature for chat-latest')
+			debug('Patch chat-latest: omit reasoning_effort and temperature')
 			delete body.reasoning_effort
 			delete body.temperature
+		} else if (/^gpt-5[12](-|$)/.test(modelName)) {
+			debug('Patch GPT-5.1/5.2: reasoning_effort=none')
+			body.reasoning_effort = 'none'
+		} else if (/^gpt-5(-|$)/.test(modelName)) {
+			debug('Patch GPT-5: reasoning_effort=minimal')
+			body.reasoning_effort = 'minimal'
+		} else {
+			debug('Patch GPT: omit reasoning_effort')
+			delete body.reasoning_effort
 		}
 	}
 
@@ -125,6 +134,12 @@ export function modelPatch(body: Record<string, any>, baseURL?: string) {
 		body.thinking = { type: 'disabled' }
 	}
 
+	if (modelName.startsWith('hy')) {
+		debug('Patch Hunyuan: disable thinking, reasoning_effort=low')
+		body.thinking = { type: 'disabled' }
+		body.reasoning_effort = 'low'
+	}
+
 	if (modelName.startsWith('grok')) {
 		if (/^grok-4-?3/.test(modelName)) {
 			debug('Patch Grok 4.3: reasoning_effort=none')
@@ -136,7 +151,12 @@ export function modelPatch(body: Record<string, any>, baseURL?: string) {
 	}
 
 	if (modelName.startsWith('kimi')) {
-		if (!modelName.includes('code')) {
+		if (modelName.startsWith('kimi-k3')) {
+			// Kimi K3 always thinks and rejects named tool choice while thinking.
+			debug('Patch Kimi K3: use required tool choice, remove parallel tool calls')
+			delete body.parallel_tool_calls
+			if (body.tool_choice?.function?.name) body.tool_choice = 'required'
+		} else if (!modelName.includes('code')) {
 			// kimi-k2.7-code cannot disable thinking
 			debug('Patch Kimi: disable thinking')
 			body.thinking = { type: 'disabled' }

@@ -5,7 +5,7 @@
   <img alt="Page Agent Banner" src="https://page-agent.github.io/assets/readme/banner-light.png">
 </picture>
 
-[![CI](https://img.shields.io/github/actions/workflow/status/alibaba/page-agent/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/alibaba/page-agent/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/alibaba/page-agent/main-ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/alibaba/page-agent/actions/workflows/main-ci.yml)
 [![npm](https://img.shields.io/npm/v/page-agent?style=flat-square&label=npm)](https://www.npmjs.com/package/page-agent)
 [![downloads](https://img.shields.io/npm/dt/page-agent?style=flat-square)](https://www.npmjs.com/package/page-agent)
 [![size](https://img.shields.io/bundlephobia/minzip/page-agent?style=flat-square&label=size)](https://bundlephobia.com/package/page-agent)
@@ -56,19 +56,17 @@ Fastest way to try PageAgent with our free Demo LLM:
 
 ```html
 <script
-    src="https://cdn.jsdelivr.net/npm/page-agent@1.11.0/dist/iife/page-agent.demo.js"
+    src="https://cdn.jsdelivr.net/npm/page-agent@1.12.2/dist/iife/page-agent.demo.js"
     crossorigin="anonymous"
 ></script>
+
+<!-- China CDN mirror if you can't access jsDelivr -->
+<!-- https://registry.npmmirror.com/page-agent/1.12.2/files/dist/iife/page-agent.demo.js -->
 ```
 
 > **⚠️ For technical evaluation only.** This demo CDN uses our free [testing LLM API](https://alibaba.github.io/page-agent/docs/features/models#free-testing-api). By using it, you agree to its [terms](https://github.com/alibaba/page-agent/blob/main/docs/terms-and-privacy.md).
-
-| Mirrors | URL                                                                                 |
-| ------- | ----------------------------------------------------------------------------------- |
-| Global  | https://cdn.jsdelivr.net/npm/page-agent@1.11.0/dist/iife/page-agent.demo.js         |
-| China   | https://registry.npmmirror.com/page-agent/1.11.0/files/dist/iife/page-agent.demo.js |
-
-Add `?autoInit=false` to load the script without creating the demo agent automatically. You can then instantiate it with `new window.PageAgent(...)`.
+>
+> Add `?autoInit=false` to load the script without creating the demo agent automatically. You can then instantiate it with `new window.PageAgent(...)` and your own LLMs.
 
 ### NPM Installation
 
